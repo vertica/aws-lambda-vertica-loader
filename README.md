@@ -85,7 +85,7 @@ Login to the [AWS console](https://console.aws.amazon.com/console/home), then:
 #### Create the Lambda function & role
 1.	Go to the AWS Lambda Console in the same region as your S3 bucket and HP Vertica cluster.
 2.	Select Create a Lambda function and enter the name MyVerticaDBLoader (for example).
-3.	Under 'Code entry type' select 'Upload a zip file' and upload  [AWSLambdaVerticaLoader-1.0.0.zip](https://github.com/vertica/aws-lambda-vertica-loader/blob/master/dist/AWSLambdaVerticaLoader-1.0.0.zip) (from the 'dist' folder of the github repo)
+3.	Under 'Code entry type' select 'Upload a zip file' and upload  [AWSLambdaVerticaLoader-1.0.0.zip](https://github.com/vertica/aws-lambda-vertica-loader/blob/master/dist/AWSLambdaVerticaLoader-1.0.0.zip?raw=true) (from the 'dist' folder of the github repo)
 4.	Use the default values of 'index.js' for the filename and 'handler' for the handler.
 5.	Follow the wizard for creating the AWS Lambda Execution Role. NOTE: You will need IAM privileges to create a new role - you may need your AWS administrator to help with this step if you don't have the required access. Give your new role a sensible name, like 'Lambda_VerticaDB_Loader_Role'. 
 5.	Use the max timeout for the function - 60(s).
