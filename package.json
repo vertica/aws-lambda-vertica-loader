@@ -1,0 +1,62 @@
+{
+    "name": "aws-lambda-vertica-loader",
+    "description": "An HP Vertica Database Loader written for AWS Lambda - based on the Redshift loader developed by AWS",
+    "version": "1.0.0",
+    "homepage": "http://github.com/vertica/aws-lambda-vertica-loader",
+    "bugs": {
+        "url": "http://github.com/vertica/aws-lambda-vertica-loader/issues",
+        "email": "bob.strahan@hp.com"
+    },
+    "dependencies": {
+        "async": "0.9.0",
+        "node-uuid": "1.4.2",
+        "pg":"4.3.0",
+	"vertica":"0.5.3"
+    },
+    "keywords": [
+        "amazon",
+        "vertica",
+        "lambda"
+    ],
+    "author": {
+        "name": "Ian Meyers",
+        "email": "meyersi@amazon.com"
+    },
+    "contributors": {
+        "name": "Bob Strahan",
+        "email": "bob.strahan@hp.com"
+    },
+    "lib": "./lib",
+    "main": "./index.js",
+    "licenses": [
+        {
+            "type": "Amazon Software License",
+            "url": "https://http://aws.amazon.com/asl"
+        }
+    ],
+    "files": [
+              "addAdditionalClusterEndpoint.js",
+        "common.js",
+        "constants.js",
+        "describeBatch.js",
+        "encryptValue.js",
+        "generate-trigger-file.py",
+        "index.js",
+        "kmsCrypto.js",
+        "LICENSE.txt",
+        "NOTICE.txt",
+        "processedFiles.js",
+        "queryBatches.js",
+        "README.md",
+        "reprocessBatch.js",
+        "setup.js",
+        "defaults.js",
+        "defaults_custom.js",
+        "unlockBatch.js",
+        "upgrades.js"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/vertica/aws-lambda-vertica-loader"
+    }
+}
