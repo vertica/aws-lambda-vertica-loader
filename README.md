@@ -33,13 +33,20 @@ The architecture leverages several AWS services:
 
 ![Loader Architecture](Architecture.png)
 
-## Setting up
+## Before You Begin
 
-You should perform a few setup tasks before you start loading data. Don't worry - it's not too hard, and you need to do the setup only once. 
-
+You should perform a few setup tasks before you start loading data. Don't worry - it's not too hard, and you need to do the setup only once:
+•	Step 1: Prepare your HP Vertica Clusters
+•	Step 2: Install Lambda Function and Execution Roles in AWS
+•	Step 3: (Optional) Create SNS Notification Topics
+•	Step 4 - Prepare a client machine for running the setup tool.
+ 
 ### Step 1 - Prepare your HP Vertica Cluster(s)
 
-Do the following for each cluster you want to load.  
+Perform the following tasks for each cluster you want to load. 
+•	Configure Network Access
+•	Set up S3 Bucket Mounts
+•	Create Database Tables and Users
 
 #### Configure Network access
 The AWS Lambda service running our loader function must be able to connect to your HP Vertica cluster over JDBC. Amazon claims that in the future Lambda will behave as though it is inside your VPC, but for now your HP Vertica cluster must be reachable on the server port (usually tcp/5433) from outside the VPC. 
@@ -272,7 +279,7 @@ to update the Dynamo DB Configuration.
 If you have a prefix that doesn't receive files very often, and want to ensure 
 that files are loaded every N minutes, use the following process to force periodic loads. 
 
-When you create the configuration, add a filenameFilterRegex such as '.*\.csv', which 
+When you create the configuration, add a Filename Filter Regex such as '.*\.csv', which 
 only loads CSV files that are put into the specified S3 prefix. Then every N minutes, 
 schedule the included dummy file generator through a CRON Job. 
 
