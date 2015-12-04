@@ -64,7 +64,8 @@ var processFile = function(index) {
 			var copySpec = {
 				Bucket : bucketName,
 				Key : fileKey,
-				CopySource : batchEntries[index]
+			        CopySource : batchEntries[index],
+				MetadataDirective: replace
 			};
 			s3.copyObject(copySpec, function(err, data) {
 				if (err) {

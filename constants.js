@@ -34,6 +34,7 @@ batchStatusGSI = 'LambdaVerticaBatchStatus';
 filesTable = 'LambdaVerticaProcessedFiles';
 conditionCheckFailed = 'ConditionalCheckFailedException';
 provisionedThroughputExceeded = 'ProvisionedThroughputExceededException';
+replace = "REPLACE";
 
 /* defaults for setup.js */
 REQD_BLANK = 'Reqd.';
