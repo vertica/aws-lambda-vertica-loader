@@ -727,6 +727,7 @@ exports.handler =
 													postLoadStmt : postLoad,
 													cluster : clusterInfo.clusterEndpoint.S
 												});
+												client.disconnect();
 											} else {
 												console.log("Load: Success");
                                                                                                 load = "Success: " + copyCommand ;
@@ -734,7 +735,7 @@ exports.handler =
 												if (clusterInfo.postLoadStatement !== undefined) {
 													var statement = clusterInfo.postLoadStatement.S ;
 													console.log("Execute postLoadStatement: " + statement) ;
-													client.query(statement, function(err, result) {	
+													client.query(statement, function(err, result) {
 														if (err) {
 															console.log("postLoadStatement: Failed");
                                                                                                         		postLoad = "Failed: " + statement ;
@@ -758,6 +759,7 @@ exports.handler =
 																cluster : clusterInfo.clusterEndpoint.S
 															});
 														}
+														client.disconnect();
 													}) ;
 												} else { 
 													callback(null, {
@@ -768,6 +770,7 @@ exports.handler =
 														postLoadStmt : postLoad,
 														cluster : clusterInfo.clusterEndpoint.S
 													});
+													client.disconnect();
 												}
 											}
 										});
