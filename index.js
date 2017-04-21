@@ -727,6 +727,7 @@ exports.handler =
 													postLoadStmt : postLoad,
 													cluster : clusterInfo.clusterEndpoint.S
 												});
+												client.disconnect();
 											} else {
 												console.log("Load: Success");
                                                                                                 load = "Success: " + copyCommand ;
@@ -758,6 +759,7 @@ exports.handler =
 																cluster : clusterInfo.clusterEndpoint.S
 															});
 														}
+														client.disconnect();
 													}) ;
 												} else { 
 													callback(null, {
@@ -768,6 +770,7 @@ exports.handler =
 														postLoadStmt : postLoad,
 														cluster : clusterInfo.clusterEndpoint.S
 													});
+													client.disconnect();
 												}
 											}
 										});
