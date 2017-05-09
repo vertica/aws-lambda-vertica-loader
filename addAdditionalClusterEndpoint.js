@@ -164,6 +164,17 @@ q_table = function(callback) {
 	});
 };
 
+q_columns = function(callback) {
+  rl.question('Copy Columns - COPY table ([*options*]) FROM files ... [' + dfltColumns + ']> ', function(answer) {
+    if (common.blank(answer) !== null) {
+      clusterConfig.M.copyColumns = {
+        S : answer
+      };
+    }
+    callback(null);
+  });
+};
+
 q_preLoadStatement = function(callback) {
         rl.question('Enter SQL statement to run before the load (Optional)> ',
                         function(answer) {

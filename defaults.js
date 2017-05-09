@@ -32,6 +32,7 @@ dfltUserName = REQD_BLANK ;
 dfltUserPwd = REQD_BLANK ;
 dfltTable = REQD_BLANK ;
 dfltCopyOptions = OPTIONAL_BLANK ;
+dfltColumns = OPTIONAL_BLANK ;
 dfltPreLoadStatement = OPTIONAL_BLANK ;
 dfltPostLoadStatement = OPTIONAL_BLANK ;
 dfltBatchSize = '1';

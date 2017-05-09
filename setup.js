@@ -231,6 +231,20 @@ q_copyOptions = function(callback) {
 };
 
 
+q_columns = function(callback) {
+  rl.question('Copy Columns - COPY table ([*options*]) FROM files ... [' + dfltColumns + ']> ', function(answer) {
+    if (common.blank(answer) === null) {
+      answer = dfltColumns;
+    }
+    if (common.blank(answer) !== null) {
+      dynamoConfig.Item.loadClusters.L[0].M.copyColumns = {
+        S : answer
+      };
+    }
+    callback(null);
+  });
+};
+
 q_preLoadStatement = function(callback) {
 	rl.question('Enter SQL statement to run before the load [' + dfltPreLoadStatement + ']> ', function(answer) {
                 if (common.blank(answer) === null) {
@@ -347,6 +361,7 @@ qs.push(q_clusterEndpoint);
 qs.push(q_clusterPort);
 qs.push(q_table);
 qs.push(q_copyOptions);
+qs.push(q_columns);
 qs.push(q_preLoadStatement);
 qs.push(q_postLoadStatement);
 qs.push(q_batchSize);

@@ -665,7 +665,14 @@ exports.handler =
 									cluster : clusterInfo.clusterEndpoint.S
 								});
 							} else {
-								copyCommand = copyCommand + 'COPY ' + clusterInfo.targetTable.S + ' from ' + copyPathList   
+								copyCommand = copyCommand + 'COPY ' + clusterInfo.targetTable.S;
+
+								var columns = clusterInfo.copyColumns.S;
+								if (columns) {
+									copyCommand += ' (' + columns + ') ';
+								}
+
+								copyCommand += ' from ' + copyPathList;
 
 								// add optional copy options
 								if (config.copyOptions !== undefined) {
