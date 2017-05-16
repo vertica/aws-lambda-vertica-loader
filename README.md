@@ -51,28 +51,6 @@ Perform the following tasks for each cluster you want to load.
 #### Configure Network access
 The AWS Lambda service running our loader function must be able to connect to your HP Vertica cluster over JDBC. Amazon claims that in the future Lambda will behave as though it is inside your VPC, but for now your HP Vertica cluster must be reachable on the server port (usually tcp/5433) from outside the VPC. 
 
-#### Set up S3 bucket mounts
-HP Vertica needs access to the files in your S3 bucket(s), and so your bucket(s) must first be mounted to a path on the HP Vertica node's filesystem. In fact, they should be mounted to the same paths *on all cluster nodes*, so that you can use the 'ON ANY NODE' option to enable balanced parallel loading.
-
-If you are using [Vertica-On-Demand (VOD)](http://www.vertica.com/hp-vertica-products/ondemand/) then follow the S3 mapping instructions in the [HP Vertica On Demand Loading Guide](https://saas.hp.com/sites/default/files/resources/files/HP_Vertica_OnDemand_LoadingDataGuide.pdf#page=6). Your buckets will be mounted on each node to the path /VOD_BUCKETNAME. 
-
-If you are not using VOD, but instead running HP Vertica in an AMI, then you should to use s3fs to mount your S3 buckets.
-
-The s3fs utility is pre-installed on cluster nodes built using the latest [HP Vertica AMI](https://aws.amazon.com/marketplace/pp/B00KY7A4OQ/ref=srh_res_product_title?ie=UTF8&sr=0-2&qid=1432228609686).  
-
-Set up your bucket mount on each node as follows:
-```
-# Create the /etc/passwd-s3fs file
-sudo sh -c "echo AWS_ACCESS_KEY_ID:AWS_SECRET_ACCESS_KEY > /etc/passwd-s3fs"
-sudo chmod 640 /etc/passwd-s3fs
-#Create the mount point directory where we'll mount the bucket - /mnt/s3/<BUCKETNAME>
-sudo mkdir -p /mnt/s3/<BUCKETNAME>
-# Add s3fs entry to /etc/fstab
-sudo sh -c "echo 's3fs#<BUCKETNAME>           /mnt/s3/<BUCKETNAME>        fuse    allow_other     0 0'  >> /etc/fstab"
-# And finally, mount the bucket
-sudo mount -a
-```
-
 #### Create Database Tables and Users
 
 You need to make sure each table you want to load exists. 
@@ -144,6 +122,11 @@ This policy will enable Lambda to call SNS, use DynamoDB, access S3, and perform
 }
 ```
 
+#### Set up Lambda Environment variables
+* aws_region - Region of s3 bucket from which the data should be imported
+* aws_id - AWS authentication key
+* aws_secret - AWS secret key
+
 ### Step 3 - (Optional) Create SNS Notification Topics
 Do you want to get an email if the loader fails? Maybe you also want one every time it succeeds?
 Or, if you are very sophisticated, you may want to notify another application that the load has completed, or even trigger your own custom Lambda function to execute additional steps in your data load workflow?
@@ -183,12 +166,13 @@ The setup.js script asks questions about how the load should be done. You can se
 $ node setup.js
 Enter the Region for the Configuration [us-east-1] >
 Enter the S3 Bucket & Prefix to watch for files [Reqd.] > myBucket/db_ingest
-Enter the path to the mounted S3 bucket on Vertica nodes [/mnt/s3/]> 
+Enter the s3 prefix for copy command [s3://]> 
 Enter a Filename Filter Regex [.*\.csv]>
 Enter the Vertica Cluster Endpoint (Public IP or DNS name) [Reqd.] > 52.2.78.41
 Enter the Vertica Cluster Port [5433]>
 Enter the Table to be Loaded [Reqd.] > testTable
 Load Options - COPY table FROM files [*options*] [Optional]> parser fdelimitedparser(delimiter=',')
+Copy Columns - COPY table ([*columns*]) FROM files ... []> a, b, c
 Enter SQL statement to run before the load [Optional]>
 Enter SQL statement to run after the load [Optional]> SELECT COMPUTE_FLEXTABLE_KEYS_AND_BUILD_VIEW('testTable')
 How many files should be buffered before loading? [1] > 5
@@ -203,9 +187,6 @@ Configuration for myBucket/db_ingest successfully written in us-east-1
 Some of the questions have default answers, shown within square brackets. If you are happy with the default, just click ENTER. If you find yourself running the setup tool a lot, you can supply your own default values in the file 'defaults_custom.js'.
 
 NOTES
-* If you are using a VOD cluster, then answer the following questions accordingly:
-  * Question 2: Do not specify an S3 bucket prefix (folder). Just use `bucketName/`. Your files must be at the root level.
-  * Question 3: The path to S3 mounted bucket must be entered as: `/VOD_` (buckets are mounted on VOD as '/VOD_bucketName')
 * The default filename filter regex will match all files with .csv suffix. If you are not loading csv files, or if you need to be more selective, modify the regex accordingly.
 * Load options - if you are loading a Flex table, you must specify a compatible flex parser here - the example above works for comma delimited files. If you get fancy with the options, you might want to test by doing a local COPY first.
 * In the example above, we elected to rebuild flex keys and view on the table after each batch load. This way, if new columns appear in the incoming CSV files, they will be automatically added to the flex view.

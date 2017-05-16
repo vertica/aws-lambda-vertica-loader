@@ -5,7 +5,7 @@
 
         http://aws.amazon.com/asl/
 
-    or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions and limitations under the License. 
+    or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
 /*
@@ -542,11 +542,11 @@ exports.handler =
 						for (var i = 0; i < batchEntries.length; i++) {
 							// copyPath used for Vertica loads - S3 bucket must be mounted on cluster servers 
 							// as: serverS3BucketMountDir/<bucketname> (see constants.js)
-							var copyPathItem = "'" + config.s3MountDir.S + batchEntries[i].replace('+', ' ').replace('%2B', '+') + "'";
+							var copyPathItem =  config.s3MountDir.S + batchEntries[i].replace('+', ' ').replace('%2B', '+');
 							if (!copyPathList) {
                                                                 copyPathList = copyPathItem;
 							} else {
-								copyPathList += ', ' + copyPathItem;
+								copyPathList += '|' + copyPathItem;
 							}
 						}
 						exports.loadVertica(config, thisBatchId, s3Info, copyPathList);
@@ -647,13 +647,42 @@ exports.handler =
 				});
 			};
 
+      /**
+       * Function which chains multiple statements
+			 * Returns the result of the last one
+       *
+       */
+      exports.chainStatements =
+        function (client, statements, callback) {
+          var chainTail = Promise.resolve();
+
+          statements.forEach(function (statement) {
+          	console.log("Chaining statement ", statement);
+            var newPromise = new Promise(function (resolve, reject) {
+              client.query(statement, function (err, result) {
+                err ? reject(err) : resolve(result);
+              });
+            });
+            chainTail.then(newPromise);
+            chainTail = newPromise;
+          });
+
+          chainTail
+            .then(function (result) {
+              callback(null, result);
+            })
+            .catch(function (err) {
+              callback(err, null);
+            });
+        };
+
 			/**
 			 * Function which loads a Vertica cluster
-			 * 
+			 *
 			 */
 			exports.loadCluster =
 					function(config, thisBatchId, s3Info, copyPathList, clusterInfo, callback) {
-					
+
 						/* build the Vertica copy command */
 						var copyCommand = '';
 						// decrypt the encrypted items
@@ -672,7 +701,7 @@ exports.handler =
 									copyCommand += ' (' + columns + ') ';
 								}
 
-								copyCommand += ' from ' + copyPathList;
+								copyCommand += 'source S3(url=\'' + copyPathList + '\')';
 
 								// add optional copy options
 								if (config.copyOptions !== undefined) {
@@ -719,9 +748,16 @@ exports.handler =
 												}
 											}) ;
 										}
-										// Run Load statement					
+										// Run Load statement
 										console.log("Execute load statement: " + copyCommand) ;
-										client.query(copyCommand, function(err, result) {
+										var statements = [
+											"ALTER SESSION SET UDPARAMETER FOR awslib aws_id='" + process.env.aws_id + "'\n",
+											"ALTER SESSION SET UDPARAMETER FOR awslib aws_secret='" + process.env.aws_secret + "'\n",
+											"ALTER SESSION SET UDPARAMETER FOR awslib aws_region='" + process.env.aws_region + "'\n",
+											copyCommand + "\n"
+                    ];
+
+										exports.chainStatements(client, statements, function(err, result) {
 											// handle errors and cleanup
 											if (err) {
 												console.log("Load: Failed");
@@ -742,7 +778,7 @@ exports.handler =
 												if (clusterInfo.postLoadStatement !== undefined) {
 													var statement = clusterInfo.postLoadStatement.S ;
 													console.log("Execute postLoadStatement: " + statement) ;
-													client.query(statement, function(err, result) {	
+													client.query(statement, function(err, result) {
 														if (err) {
 															console.log("postLoadStatement: Failed");
                                                                                                         		postLoad = "Failed: " + statement ;
@@ -768,7 +804,7 @@ exports.handler =
 														}
 														client.disconnect();
 													}) ;
-												} else { 
+												} else {
 													callback(null, {
 														status : OK,
 														error : null,

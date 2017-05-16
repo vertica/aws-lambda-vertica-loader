@@ -120,7 +120,7 @@ q_s3Prefix = function(callback) {
 };
 
 q_s3MountDir = function(callback) {
-        rl.question('Enter the path to the mounted S3 bucket on Vertica nodes [' + dfltS3MountDir + ']> ', function(answer) {
+        rl.question('Enter the s3 prefix for copy command [' + dfltS3MountDir + ']> ', function(answer) {
                 if (common.blank(answer) === null) {
                         answer = dfltS3MountDir ;
                 }
@@ -232,7 +232,7 @@ q_copyOptions = function(callback) {
 
 
 q_columns = function(callback) {
-  rl.question('Copy Columns - COPY table ([*options*]) FROM files ... [' + dfltColumns + ']> ', function(answer) {
+  rl.question('Copy Columns - COPY table ([*columns*]) FROM files ... [' + dfltColumns + ']> ', function(answer) {
     if (common.blank(answer) === null) {
       answer = dfltColumns;
     }

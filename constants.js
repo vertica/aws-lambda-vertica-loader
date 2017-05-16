@@ -41,7 +41,7 @@ OPTIONAL_BLANK = 'Optional';
 
 dfltRegion = 'us-east-1';
 dfltS3Prefix = REQD_BLANK ;
-dfltS3MountDir = '/mnt/s3/';
+dfltS3MountDir = 's3://';
 dfltFilenameFilter = '.*\\.csv';
 dfltClusterEndpoint = REQD_BLANK ;
 dfltClusterPort = '5433';
