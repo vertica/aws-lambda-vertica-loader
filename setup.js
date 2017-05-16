@@ -120,7 +120,7 @@ q_s3Prefix = function(callback) {
 };
 
 q_s3MountDir = function(callback) {
-        rl.question('Enter the path to the mounted S3 bucket on Vertica nodes [' + dfltS3MountDir + ']> ', function(answer) {
+        rl.question('Enter the s3 prefix for copy command [' + dfltS3MountDir + ']> ', function(answer) {
                 if (common.blank(answer) === null) {
                         answer = dfltS3MountDir ;
                 }
@@ -230,6 +230,20 @@ q_copyOptions = function(callback) {
 	});
 };
 
+
+q_columns = function(callback) {
+  rl.question('Copy Columns - COPY table ([*columns*]) FROM files ... [' + dfltColumns + ']> ', function(answer) {
+    if (common.blank(answer) === null) {
+      answer = dfltColumns;
+    }
+    if (common.blank(answer) !== null) {
+      dynamoConfig.Item.loadClusters.L[0].M.copyColumns = {
+        S : answer
+      };
+    }
+    callback(null);
+  });
+};
 
 q_preLoadStatement = function(callback) {
 	rl.question('Enter SQL statement to run before the load [' + dfltPreLoadStatement + ']> ', function(answer) {
@@ -347,6 +361,7 @@ qs.push(q_clusterEndpoint);
 qs.push(q_clusterPort);
 qs.push(q_table);
 qs.push(q_copyOptions);
+qs.push(q_columns);
 qs.push(q_preLoadStatement);
 qs.push(q_postLoadStatement);
 qs.push(q_batchSize);
